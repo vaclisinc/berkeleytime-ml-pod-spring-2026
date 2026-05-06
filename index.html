@@ -84,6 +84,35 @@
   }
   .pageno { font-variant-numeric: tabular-nums; font-weight: 500; }
 
+  .nav-fab {
+    position: fixed;
+    bottom: 28px;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--bt-border);
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: var(--bt-navy);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    z-index: 50;
+    opacity: 0.55;
+    transition: opacity 180ms ease, transform 180ms ease, background 180ms ease;
+  }
+  .nav-fab.next { right: 28px; }
+  .nav-fab.prev { left: 28px; }
+  .nav-fab:hover {
+    opacity: 1;
+    background: var(--bt-blue);
+    color: #fff;
+    border-color: var(--bt-blue);
+  }
+  .nav-fab.next:hover { transform: translateX(2px); }
+  .nav-fab.prev:hover { transform: translateX(-2px); }
+  .nav-fab svg { width: 18px; height: 18px; }
+
   /* ─── Typography ─── */
   .eyebrow {
     font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase;
@@ -1100,6 +1129,13 @@
 
 </div>
 
+<button class="nav-fab prev" aria-label="Previous slide" title="Previous slide">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+</button>
+<button class="nav-fab next" aria-label="Next slide" title="Next slide">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+</button>
+
 <script>
   const slides = document.querySelectorAll('.slide');
   let idx = 0;
@@ -1122,9 +1158,19 @@
   });
 
   document.addEventListener('click', (e) => {
+    if (e.target.closest('.nav-fab')) return;
     const x = e.clientX / window.innerWidth;
     if (x > 0.3) go(idx + 1);
     else go(idx - 1);
+  });
+
+  document.querySelector('.nav-fab.next').addEventListener('click', (e) => {
+    e.stopPropagation();
+    go(idx + 1);
+  });
+  document.querySelector('.nav-fab.prev').addEventListener('click', (e) => {
+    e.stopPropagation();
+    go(idx - 1);
   });
 </script>
 </body>
