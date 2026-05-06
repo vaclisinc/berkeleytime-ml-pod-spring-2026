@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ML & Explore Pod — OCTO Showcase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bt-blue: #2f80ed;
+    --bt-blue-light: #4EA6FA;
+    --bt-blue-pale: #B9CEEA;
+    --bt-navy: #1E3A5C;
+    --bt-navy-deep: #0F1F3A;
+    --bt-ink: #0A0D12;
+    --bt-bg: #FAFBFD;
+    --bt-bg-soft: #F2F5FA;
+    --bt-border: #E4EAF2;
+    --bt-muted: #6B7C93;
+    --bt-accent: #6ADF86;
+    --bt-warm: #F9E151;
+
+    --grad-hero: linear-gradient(135deg, #1E3A5C 0%, #2f80ed 60%, #4EA6FA 100%);
+    --grad-card: linear-gradient(180deg, #FFFFFF 0%, #F7FAFD 100%);
+
+    --shadow-sm: 0 1px 2px rgba(15,31,58,0.06), 0 1px 3px rgba(15,31,58,0.04);
+    --shadow-md: 0 8px 24px rgba(15,31,58,0.08), 0 2px 6px rgba(15,31,58,0.04);
+    --shadow-lg: 0 24px 60px rgba(15,31,58,0.14), 0 8px 16px rgba(15,31,58,0.06);
+
+    --radius-sm: 10px;
+    --radius-md: 18px;
+    --radius-lg: 28px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--bt-bg);
+    color: var(--bt-ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
+  }
+
+  .deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    padding: 110px 96px 80px;
+    flex-direction: column;
+    justify-content: center;
+    animation: fadeIn 480ms cubic-bezier(.2,.7,.2,1);
+  }
+  .slide.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── Top chrome ─── */
+  .chrome {
+    position: absolute;
+    top: 36px; left: 96px; right: 96px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--bt-muted); font-weight: 500;
+    z-index: 5;
+  }
+  .chrome .brand { display: flex; align-items: center; gap: 10px; color: var(--bt-navy); font-weight: 600; }
+  .chrome .brand .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bt-blue); box-shadow: 0 0 0 4px rgba(47,128,237,0.15); }
+
+  .footer {
+    position: absolute;
+    bottom: 32px; left: 96px; right: 96px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: var(--bt-muted); letter-spacing: 0.04em;
+    z-index: 5;
+  }
+  .pageno { font-variant-numeric: tabular-nums; font-weight: 500; }
+
+  /* ─── Typography ─── */
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--bt-blue); font-weight: 600; margin-bottom: 20px;
+  }
+  h2 {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: clamp(44px, 4.8vw, 68px);
+    line-height: 1.05; letter-spacing: -0.018em; color: var(--bt-navy);
+    margin-bottom: 0;
+  }
+  h2 em { font-style: italic; color: var(--bt-blue); padding-right: 0.04em; }
+  h3 { font-size: 22px; font-weight: 600; color: var(--bt-navy); letter-spacing: -0.005em; }
+  .lede { font-size: 21px; line-height: 1.55; color: var(--bt-muted); max-width: 720px; margin-top: 28px; font-weight: 400; }
+  .lede em { font-style: italic; color: var(--bt-navy); font-weight: 500; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ─── Slide 1 — Cover with laptop ─── */
+  .slide-cover {
+    background: var(--grad-hero);
+    color: white;
+    padding: 0;
+    overflow: hidden;
+  }
+  .slide-cover .chrome { color: rgba(255,255,255,0.7); }
+  .slide-cover .chrome .brand { color: white; }
+  .slide-cover .chrome .brand .dot { background: white; box-shadow: 0 0 0 4px rgba(255,255,255,0.2); }
+
+  .grid-bg {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse at top right, black 0%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse at top right, black 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cover-text {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 50%;
+    padding: 110px 96px 0;
+    display: flex; flex-direction: column; justify-content: center;
+    z-index: 2;
+  }
+  .cover-tag {
+    font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(255,255,255,0.7); font-weight: 500; margin-bottom: 22px;
+  }
+  .cover-headline {
+    font-family: 'Fraunces', serif; font-weight: 300;
+    font-size: clamp(58px, 6.6vw, 100px);
+    line-height: 1.04; letter-spacing: -0.025em;
+    color: white;
+  }
+  .cover-headline em {
+    font-style: italic; font-weight: 300;
+    background: linear-gradient(120deg, #B9CEEA 0%, #FFFFFF 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    padding: 0 0.06em 0.05em 0;
+  }
+
+  .cover-laptop {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 52%;
+    padding: 0 64px;
+    display: flex; align-items: flex-end; justify-content: center;
+    z-index: 1;
+  }
+  .laptop {
+    width: 100%; height: 100%;
+    background: linear-gradient(180deg, #16181C 0%, #0A0B0E 100%);
+    border-radius: 18px 18px 0 0;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-bottom: none;
+    padding: 26px 18px 0;
+    box-shadow: 0 -25px 90px rgba(0,0,0,0.5), 0 -2px 0 rgba(255,255,255,0.06) inset;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+  .laptop::before {
+    content: '';
+    position: absolute;
+    top: 11px; left: 50%; transform: translateX(-50%);
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #2a2c30;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.05);
+  }
+  .laptop-screen {
+    flex: 1;
+    background: white;
+    border-radius: 4px 4px 0 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .laptop-screen img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: top center;
+    display: block;
+  }
+
+  /* ─── Editorial layout ─── */
+  .editorial { max-width: 1100px; }
+  .editorial .lede { margin-top: 36px; }
+  .editorial .lede strong { color: var(--bt-navy); font-weight: 600; }
+
+  /* ─── Two-point editorial (slide 2) ─── */
+  .points {
+    margin-top: 56px;
+    display: flex; flex-direction: column; gap: 28px;
+    max-width: 1080px;
+  }
+  .point {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 36px; align-items: baseline;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--bt-border);
+  }
+  .point:last-of-type { border-bottom: none; padding-bottom: 0; }
+  .point-num {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 300;
+    font-size: clamp(80px, 9vw, 130px);
+    line-height: 0.9; letter-spacing: -0.04em;
+    background: linear-gradient(120deg, var(--bt-blue) 0%, var(--bt-blue-light) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    min-width: 200px;
+  }
+  .point-num .unit {
+    font-size: 0.45em; font-style: italic; font-weight: 300;
+    -webkit-text-fill-color: var(--bt-muted);
+    color: var(--bt-muted);
+  }
+  .point-body {
+    padding-top: 12px;
+  }
+  .point-body .head {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: 32px; line-height: 1.2;
+    color: var(--bt-navy);
+    letter-spacing: -0.01em;
+    margin-bottom: 10px;
+  }
+  .point-body .head em { font-style: italic; color: var(--bt-blue); }
+  .point-body .desc {
+    font-size: 17px; line-height: 1.55;
+    color: var(--bt-muted); max-width: 640px;
+  }
+  .point-body .desc em { font-style: italic; color: var(--bt-navy); font-weight: 500; }
+
+  .punchline {
+    margin-top: 40px;
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 300;
+    font-size: clamp(28px, 2.6vw, 38px);
+    color: var(--bt-navy); letter-spacing: -0.01em;
+    line-height: 1.3; max-width: 900px;
+  }
+  .punchline em {
+    font-style: italic; font-weight: 400;
+    background: linear-gradient(120deg, var(--bt-blue) 0%, var(--bt-blue-light) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ─── Solution: two laptops (slide 3) ─── */
+  .slide-solution {
+    padding: 110px 80px 80px;
+  }
+  .sol-text {
+    margin-bottom: 36px;
+    max-width: 1100px;
+  }
+  .sol-laptops {
+    flex: 1;
+    min-height: 0;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: end;
+  }
+  .sol-side {
+    display: flex; flex-direction: column;
+    height: 100%;
+    min-height: 0;
+  }
+  .sol-laptop {
+    flex: 1;
+    min-height: 0;
+    background: linear-gradient(180deg, #16181C 0%, #0A0B0E 100%);
+    border-radius: 14px 14px 0 0;
+    border: 1px solid rgba(15,31,58,0.18);
+    border-bottom: none;
+    padding: 22px 14px 0;
+    box-shadow: 0 -20px 60px rgba(15,31,58,0.18);
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+  .sol-laptop::before {
+    content: '';
+    position: absolute;
+    top: 9px; left: 50%; transform: translateX(-50%);
+    width: 4px; height: 4px; border-radius: 50%;
+    background: #2a2c30;
+  }
+  .sol-laptop .sol-screen {
+    flex: 1;
+    background: white;
+    border-radius: 4px 4px 0 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .sol-laptop .sol-screen img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: top center;
+    display: block;
+  }
+  .sol-cap {
+    margin-bottom: 22px;
+  }
+  .sol-name {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: 36px; color: var(--bt-navy);
+    letter-spacing: -0.015em; line-height: 1;
+    margin-bottom: 14px;
+  }
+  .sol-name.new {
+    background: linear-gradient(120deg, var(--bt-blue) 0%, var(--bt-blue-light) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .sol-words {
+    display: flex; align-items: baseline; gap: 14px;
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 300;
+    font-size: 22px; color: var(--bt-muted);
+    letter-spacing: -0.005em;
+    flex-wrap: wrap;
+  }
+  .sol-words .dot {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--bt-blue-pale);
+    display: inline-block; transform: translateY(-4px);
+  }
+  .sol-side.new .sol-words { color: var(--bt-navy); }
+  .sol-side.new .sol-words .dot { background: var(--bt-blue); }
+  .sol-tag {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--bt-muted); font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .sol-side.new .sol-tag { color: var(--bt-blue); }
+
+  /* ─── Phase headline (Pre/Post Midterm) ─── */
+  .phase-h {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: clamp(72px, 8vw, 120px);
+    line-height: 0.95; letter-spacing: -0.03em;
+    color: var(--bt-navy);
+    margin-bottom: 6px;
+  }
+  .phase-sub {
+    font-size: 22px; line-height: 1.4;
+    color: var(--bt-muted); font-weight: 400;
+    letter-spacing: -0.005em;
+    max-width: 720px;
+  }
+  .phase-sub em { font-style: italic; color: var(--bt-navy); font-weight: 500; }
+
+  /* ─── Parallel Tracks split (slide 4) ─── */
+  .slide-parallel { padding: 0; background: white; }
+  .par-header {
+    position: absolute;
+    top: 110px; left: 96px; right: 96px;
+    z-index: 5;
+  }
+  .par-header .eyebrow { margin-bottom: 20px; }
+
+  .par-grid {
+    position: absolute;
+    top: 360px; left: 0; right: 0; bottom: 0;
+    display: grid; grid-template-columns: 1fr 1fr;
+  }
+  .par-half {
+    padding: 50px 64px 80px;
+    display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+    min-height: 0;
+  }
+  .par-design {
+    background: #F2F5FA;
+    color: var(--bt-navy);
+  }
+  .par-eng {
+    background: linear-gradient(150deg, #1E3A5C 0%, #2f80ed 100%);
+    color: white;
+  }
+  .par-eyebrow {
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    font-weight: 600; margin-bottom: 14px;
+  }
+  .par-design .par-eyebrow { color: var(--bt-blue); }
+  .par-eng .par-eyebrow { color: rgba(255,255,255,0.7); }
+
+  .par-title {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: clamp(44px, 4.6vw, 64px);
+    line-height: 1; letter-spacing: -0.02em;
+    margin-bottom: 28px;
+  }
+  .par-title em {
+    font-style: italic;
+    background: linear-gradient(120deg, var(--bt-blue) 0%, var(--bt-blue-light) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .par-eng .par-title { color: white; }
+  .par-eng .par-title em {
+    background: linear-gradient(120deg, #B9CEEA 0%, #FFFFFF 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .par-flow {
+    flex: 1; min-height: 0;
+    display: grid; grid-template-columns: 1.4fr auto 1fr;
+    column-gap: 24px;
+    align-items: center;
+  }
+  .par-flow-img {
+    height: 100%; min-height: 0;
+    display: flex; align-items: center; justify-content: flex-start;
+  }
+  .par-flow-img img {
+    max-width: 100%; max-height: 100%;
+    object-fit: contain; display: block;
+  }
+  .par-flow-arrow {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 300;
+    font-size: clamp(48px, 5vw, 72px);
+    line-height: 1; letter-spacing: -0.04em;
+    background: linear-gradient(120deg, var(--bt-blue) 0%, var(--bt-blue-light) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+  }
+  .par-flow-logo {
+    display: flex; align-items: center; justify-content: center;
+    height: 100%;
+  }
+  .par-flow-logo svg {
+    width: auto; height: 60%;
+    max-height: 240px;
+    display: block;
+  }
+
+  .par-features {
+    flex: 1; min-height: 0;
+    display: flex; flex-direction: column;
+    justify-content: center; gap: 0;
+  }
+  .par-feat {
+    border-top: 1px solid rgba(255,255,255,0.16);
+    padding: 22px 0;
+    display: grid; grid-template-columns: auto 1fr;
+    gap: 28px; align-items: baseline;
+  }
+  .par-feat:last-child { border-bottom: 1px solid rgba(255,255,255,0.16); }
+  .par-feat .num {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 300;
+    font-size: 32px; color: rgba(255,255,255,0.55);
+    letter-spacing: -0.02em; line-height: 1;
+    min-width: 56px;
+  }
+  .par-feat h4 {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: 26px; color: white;
+    letter-spacing: -0.01em; margin-bottom: 6px;
+    line-height: 1.1;
+  }
+  .par-feat p {
+    font-size: 14px; line-height: 1.5;
+    color: rgba(255,255,255,0.72);
+    max-width: 36ch;
+  }
+  .par-half .par-foot {
+    margin-top: 22px;
+    font-size: 13px; line-height: 1.5;
+    color: var(--bt-muted);
+    max-width: 38ch;
+  }
+
+  /* ─── Pod grid (slide 5) — no containers ─── */
+  .pod-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    column-gap: 64px;
+    margin-top: 56px;
+  }
+  .pod-card {
+    border-top: 1px solid var(--bt-border);
+    padding-top: 22px;
+  }
+  .pod-card .num {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 14px; color: var(--bt-blue); font-weight: 500;
+    letter-spacing: 0.02em; margin-bottom: 18px;
+  }
+  .pod-card h3 {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: 32px; line-height: 1.1; letter-spacing: -0.015em;
+    color: var(--bt-navy); margin-bottom: 14px;
+  }
+  .pod-card p {
+    font-size: 16px; color: var(--bt-muted); line-height: 1.5;
+    max-width: 30ch;
+  }
+  .pod-card p em { font-style: italic; color: var(--bt-navy); font-weight: 500; }
+  .pod-card .tag {
+    display: block; margin-top: 20px;
+    font-size: 11px; font-weight: 600;
+    color: var(--bt-blue); letter-spacing: 0.16em; text-transform: uppercase;
+  }
+
+  /* ─── Subteam slide header (clean) ─── */
+  .sub-head {
+    margin-bottom: 28px;
+  }
+  .sub-head .eyebrow { margin-bottom: 14px; }
+  .sub-head h2 { font-size: clamp(40px, 4.4vw, 60px); }
+
+  /* ─── Subteam image treatments ─── */
+  .stage {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* recommendation laptop (slide 6) */
+  .rec-laptop {
+    width: 90%; max-width: 1100px;
+    margin: 0 auto;
+    background: linear-gradient(180deg, #16181C 0%, #0A0B0E 100%);
+    border-radius: 14px 14px 0 0;
+    border: 1px solid rgba(15,31,58,0.18);
+    border-bottom: none;
+    padding: 28px 16px 0;
+    box-shadow: 0 -30px 80px rgba(15,31,58,0.18);
+    position: relative;
+    flex: 1; min-height: 0;
+    display: flex; flex-direction: column;
+  }
+  .rec-laptop::before {
+    content: '';
+    position: absolute;
+    top: 12px; left: 50%; transform: translateX(-50%);
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #2a2c30;
+  }
+  .rec-screen {
+    flex: 1;
+    background: white;
+    border-radius: 4px 4px 0 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .rec-screen img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: top center;
+    display: block;
+  }
+
+  /* enrollment probability (slide 7) — history → probability */
+  .prob-flow {
+    flex: 1; min-height: 0;
+    display: grid; grid-template-columns: 1.4fr auto 1fr;
+    gap: 36px;
+    align-items: center;
+    width: 100%;
+  }
+  .prob-side {
+    display: flex; flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    gap: 14px;
+    min-height: 0;
+  }
+  .prob-tag {
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--bt-muted); font-weight: 700;
+  }
+  .prob-side.out .prob-tag { color: var(--bt-blue); }
+  .prob-img {
+    flex: 1; min-height: 0;
+    display: flex; align-items: center; justify-content: flex-start;
+  }
+  .prob-img img {
+    max-width: 100%; max-height: 100%;
+    object-fit: contain;
+    display: block;
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+  }
+  .prob-arrow {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 300;
+    font-size: clamp(56px, 6vw, 88px);
+    line-height: 1; letter-spacing: -0.04em;
+    background: linear-gradient(120deg, var(--bt-blue) 0%, var(--bt-blue-light) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    align-self: center;
+    padding: 0 4px;
+  }
+  .prob-arrow-cap {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 14px; color: var(--bt-muted);
+    text-align: center;
+    letter-spacing: -0.005em;
+  }
+
+  /* ─── Semantic Search (slide 5) — editorial phone duo ─── */
+  .sem-stage {
+    flex: 1; min-height: 0;
+    display: flex; flex-direction: column;
+    padding: 0 40px;
+  }
+  .sem-quote {
+    margin-top: 28px;
+    margin-bottom: 24px;
+    text-align: center;
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 300;
+    font-size: 28px; color: var(--bt-muted);
+    letter-spacing: -0.005em;
+  }
+  .sem-row {
+    flex: 1; min-height: 0;
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+  }
+  .sem-quote em {
+    font-style: italic; color: var(--bt-navy); font-weight: 400;
+  }
+  .sem-side {
+    display: flex; flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: center;
+    gap: 18px;
+  }
+  .sem-tag {
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--bt-muted); font-weight: 700;
+  }
+  .sem-side.after .sem-tag { color: var(--bt-blue); }
+  .phone {
+    width: 280px;
+    aspect-ratio: 9 / 16;
+    background: linear-gradient(180deg, #1A1D24 0%, #0A0B0E 100%);
+    border-radius: 38px;
+    padding: 10px;
+    box-shadow: 0 30px 70px rgba(15,31,58,0.18), 0 8px 20px rgba(15,31,58,0.08);
+    position: relative;
+    transition: transform 400ms ease;
+  }
+  .phone::before {
+    content: '';
+    position: absolute;
+    top: 14px; left: 50%; transform: translateX(-50%);
+    width: 78px; height: 22px;
+    background: #0A0B0E;
+    border-radius: 999px;
+    z-index: 3;
+  }
+  .phone-screen {
+    width: 100%; height: 100%;
+    background: white;
+    border-radius: 30px;
+    overflow: hidden;
+    position: relative;
+  }
+  .phone-screen img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: top left;
+    display: block;
+  }
+  .sem-side.before .phone {
+    transform: rotate(-4deg) translateY(8px);
+    opacity: 0.78;
+    filter: saturate(0.85);
+  }
+  .sem-side.after .phone {
+    transform: rotate(3deg) translateY(-8px);
+  }
+  .sem-arrow {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 300;
+    font-size: clamp(56px, 6vw, 88px);
+    line-height: 1; letter-spacing: -0.04em;
+    background: linear-gradient(120deg, var(--bt-blue) 0%, var(--bt-blue-light) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    padding: 0 8px;
+    align-self: center;
+  }
+
+  /* ─── Ship grid (slide 9 — Post-Midterm) ─── */
+  .ship-grid {
+    margin-top: 32px;
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    gap: 32px; align-items: center;
+    flex: 1; min-height: 0;
+  }
+  .ship-item {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--bt-border);
+    background: white;
+    max-height: 100%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ship-item img {
+    width: 100%; max-height: 100%;
+    object-fit: contain; display: block;
+  }
+  .ship-item .ship-label {
+    position: absolute; top: 14px; left: 14px;
+    background: rgba(15,31,58,0.9); color: white;
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    padding: 5px 12px; border-radius: 999px; font-weight: 600;
+    backdrop-filter: blur(8px);
+    z-index: 2;
+  }
+  .ship-arrow {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 300;
+    font-size: 72px; color: var(--bt-blue);
+    line-height: 1;
+  }
+
+  /* ─── Closing (combined enough+thanks) ─── */
+  .slide-thanks {
+    background: var(--grad-hero);
+    color: white;
+    align-items: center;
+    text-align: center;
+  }
+  .slide-thanks .grid-bg { mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%); -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%); }
+  .slide-thanks .chrome { color: rgba(255,255,255,0.7); }
+  .slide-thanks .chrome .brand { color: white; }
+  .slide-thanks .chrome .brand .dot { background: white; box-shadow: 0 0 0 4px rgba(255,255,255,0.2); }
+  .slide-thanks .footer { color: rgba(255,255,255,0.6); }
+
+  .enough {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 300;
+    font-size: clamp(28px, 2.8vw, 40px);
+    color: rgba(255,255,255,0.78);
+    margin-bottom: 28px;
+    letter-spacing: -0.005em;
+    line-height: 1.2;
+  }
+  .enough em {
+    font-style: italic;
+    background: linear-gradient(120deg, #B9CEEA 0%, #FFFFFF 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .slide-thanks h1 {
+    font-family: 'Fraunces', serif; font-weight: 300;
+    font-size: clamp(120px, 14vw, 200px);
+    color: white;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+  }
+  .slide-thanks h1 em {
+    font-style: italic;
+    background: linear-gradient(120deg, #B9CEEA 0%, #FFFFFF 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .slide-thanks .sub {
+    color: rgba(255,255,255,0.78); font-size: 19px; margin-top: 28px;
+    max-width: 580px; font-weight: 300; line-height: 1.5;
+  }
+
+  /* ─── Print ─── */
+  @media print {
+    html, body { overflow: visible; }
+    .deck { height: auto; }
+    .slide { display: flex; position: relative; page-break-after: always; height: 100vh; }
+  }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- ───────────── SLIDE 1 — COVER (laptop bottom) ───────────── -->
+  <section class="slide slide-cover active">
+    <div class="grid-bg"></div>
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> Berkeleytime · ML & Explore</div>
+      <div>OCTO Showcase · Spring 2026</div>
+    </div>
+
+    <div class="cover-text">
+      <div class="cover-tag">Pod Showcase</div>
+      <div class="cover-headline">Find the course you didn't<br/>know to <em>look for.</em></div>
+    </div>
+
+    <div class="cover-laptop">
+      <div class="laptop">
+        <div class="laptop-screen">
+          <img src="cover2.png" alt="Berkeleytime Explore" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────── SLIDE 2 — WHY (editorial) ───────────── -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> Berkeleytime · ML & Explore</div>
+      <div>The Problem</div>
+    </div>
+
+    <div class="editorial">
+      <div class="eyebrow">Why this pod exists</div>
+      <h2>The opportunity is <em>right there.</em><br/>Nobody has built it yet.</h2>
+
+      <div class="points">
+        <div class="point">
+          <div class="point-num">6K<span class="unit">+</span></div>
+          <div class="point-body">
+            <div class="head">Classes every semester.</div>
+            <div class="desc">No platform helps you find the <em>hidden gems</em>. Imagine you miss how many niche but interesing courses?</div>
+          </div>
+        </div>
+        <div class="point">
+          <div class="point-num">122K</div>
+          <div class="point-body">
+            <div class="head">Monthly users we already reach.</div>
+            <div class="desc">Enough scale to genuinely <em>shape</em> the course-selection community at Berkeley.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="punchline">Yet, everyone just uses Berkeleytime to <em>check grades</em> and <em>build schedules</em>. </div>
+    </div>
+
+    <div class="footer">
+      <div>berkeleytime.com</div>
+      <div class="pageno">02</div>
+    </div>
+  </section>
+
+  <!-- ───────────── SLIDE 3 — SOLUTION (two laptops) ───────────── -->
+  <section class="slide slide-solution">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> Berkeleytime · ML & Explore</div>
+      <div>The Solution</div>
+    </div>
+
+    <div class="sol-text">
+      <div class="eyebrow">Our Approach</div>
+      <h2>Don't <em>rebuild</em> the catalog.<br/>Build something <em>new</em> beside it.</h2>
+    </div>
+
+    <div class="sol-laptops">
+      <div class="sol-side">
+        <div class="sol-cap">
+          <div class="sol-tag">— Catalog · keep as-is</div>
+          <div class="sol-name">Look up what you know.</div>
+          <div class="sol-words">
+            <span>Fast</span><span class="dot"></span>
+            <span>Simple</span><span class="dot"></span>
+            <span>Informative</span>
+          </div>
+        </div>
+        <div class="sol-laptop">
+          <div class="sol-screen"><img src="catalog.png" alt="Catalog page" /></div>
+        </div>
+      </div>
+      <div class="sol-side new">
+        <div class="sol-cap">
+          <div class="sol-tag">— Explore · brand new</div>
+          <div class="sol-name new">Discover what you don't.</div>
+          <div class="sol-words">
+            <span>Personalized</span><span class="dot"></span>
+            <span>Community</span><span class="dot"></span>
+            <span>Discovery</span>
+          </div>
+        </div>
+        <div class="sol-laptop">
+          <div class="sol-screen"><img src="cover.png" alt="Explore page" /></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>berkeleytime.com</div>
+      <div class="pageno">03</div>
+    </div>
+  </section>
+
+  <!-- ───────────── SLIDE 4 — PRE-MIDTERM PARALLEL TRACKS ───────────── -->
+  <section class="slide slide-parallel">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> Berkeleytime · ML & Explore</div>
+      <div>Phase 01</div>
+    </div>
+
+    <div class="par-header">
+      <div class="eyebrow">Phase 01</div>
+      <h2 class="phase-h">Pre-Midterm.</h2>
+      <p class="phase-sub">Two teams, moving <em>in parallel.</em></p>
+    </div>
+
+    <div class="par-grid">
+      <div class="par-half par-design">
+        <div class="par-eyebrow">— Design Track</div>
+        <div class="par-title">Started with <em>students.</em></div>
+        <div class="par-flow">
+          <div class="par-flow-img"><img src="survey.png" alt="User survey results" /></div>
+          <div class="par-flow-arrow">→</div>
+          <div class="par-flow-logo">
+            <svg viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg" aria-label="Figma">
+              <path d="M50 0H25a25 25 0 0 0 0 50h25z" fill="#F24E1E"/>
+              <path d="M50 0h25a25 25 0 0 1 0 50H50z" fill="#FF7262"/>
+              <path d="M50 50H25a25 25 0 0 0 0 50h25z" fill="#A259FF"/>
+              <circle cx="75" cy="75" r="25" fill="#1ABCFE"/>
+              <circle cx="25" cy="125" r="25" fill="#0ACF83"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="par-half par-eng">
+        <div class="par-eyebrow">— Engineering Track</div>
+        <div class="par-title">Three problems. <em>One pod.</em></div>
+        <div class="par-features">
+          <div class="par-feat">
+            <div class="num">01</div>
+            <div>
+              <h4>Semantic Search</h4>
+              <p>Search by meaning, not keywords.</p>
+            </div>
+          </div>
+          <div class="par-feat">
+            <div class="num">02</div>
+            <div>
+              <h4>Recommendation</h4>
+              <p>Trace user behavior, surface adjacent courses.</p>
+            </div>
+          </div>
+          <div class="par-feat">
+            <div class="num">03</div>
+            <div>
+              <h4>Enrollment Probability</h4>
+              <p>Predict P(get in) from waitlist position.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>berkeleytime.com</div>
+      <div class="pageno" style="color: white;">04</div>
+    </div>
+  </section>
+
+  <!-- ───────────── SLIDE 6 — SEMANTIC SEARCH (compare) ───────────── -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> Berkeleytime · ML & Explore</div>
+      <div>Sub-team 01 · Semantic Search</div>
+    </div>
+
+    <div class="sub-head">
+      <div class="eyebrow">Sub-team 01 · Semantic Search</div>
+      <h2>From <em>keywords</em> to <em>meaning.</em></h2>
+    </div>
+
+    <div class="sem-stage">
+      <div class="sem-quote">She typed <em>"how to take a vlog"</em> — and BT had no idea.</div>
+      <div class="sem-row">
+        <div class="sem-side before">
+          <div class="sem-tag">— Before</div>
+          <div class="phone"><div class="phone-screen"><img src="fuzzy-search.png" alt="Fuzzy keyword search" /></div></div>
+        </div>
+        <div class="sem-arrow">→</div>
+        <div class="sem-side after">
+          <div class="sem-tag">— After</div>
+          <div class="phone"><div class="phone-screen"><img src="semantic-search.png" alt="Semantic search" /></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>berkeleytime.com</div>
+      <div class="pageno">05</div>
+    </div>
+  </section>
+
+  <!-- ───────────── SLIDE 6 — RECOMMENDATION (full bleed) ───────────── -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> Berkeleytime · ML & Explore</div>
+      <div>Sub-team 02 · Recommendation</div>
+    </div>
+
+    <div class="sub-head">
+      <div class="eyebrow">Sub-team 02 · Recommendation</div>
+      <h2>"<em>Because you viewed</em>…"</h2>
+    </div>
+
+    <div class="stage">
+      <div class="rec-laptop">
+        <div class="rec-screen">
+          <img src="recommendation.png" alt="Recommendation rows" />
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>berkeleytime.com</div>
+      <div class="pageno">06</div>
+    </div>
+  </section>
+
+  <!-- ───────────── SLIDE 7 — ENROLLMENT PROBABILITY ───────────── -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> Berkeleytime · ML & Explore</div>
+      <div>Sub-team 03 · Enrollment Probability</div>
+    </div>
+
+    <div class="sub-head">
+      <div class="eyebrow">Sub-team 03 · Enrollment Probability · 3 Years of Data</div>
+      <h2>What's my <em>real</em> chance of getting in?</h2>
+    </div>
+
+    <div class="stage">
+      <div class="prob-flow">
+        <div class="prob-side">
+          <div class="prob-tag">— 3 years of enrollment data</div>
+          <div class="prob-img"><img src="enrollment-history.png" alt="Enrollment history" /></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <div class="prob-arrow">→</div>
+          <div class="prob-arrow-cap">model</div>
+        </div>
+        <div class="prob-side out">
+          <div class="prob-tag">— Your real chance, today</div>
+          <div class="prob-img"><img src="probability.png" alt="Enrollment probability widget" /></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>berkeleytime.com</div>
+      <div class="pageno">07</div>
+    </div>
+  </section>
+
+  <!-- ───────────── SLIDE 8 — POST-MIDTERM (figma → shipped) ───────────── -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> Berkeleytime · ML & Explore</div>
+      <div>Phase 02 · Integration</div>
+    </div>
+
+    <div class="eyebrow">Phase 02</div>
+    <h2 class="phase-h">Post-Midterm.</h2>
+    <p class="phase-sub">From <em>concept</em> to <em>shipped.</em></p>
+
+    <div class="ship-grid">
+      <div class="ship-item">
+        <div class="ship-label">Figma</div>
+        <img src="q.png" alt="Figma design" />
+      </div>
+      <div class="ship-arrow">→</div>
+      <div class="ship-item">
+        <div class="ship-label">Live</div>
+        <img src="cover.png" alt="Shipped Explore page" />
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>berkeleytime.com</div>
+      <div class="pageno">08</div>
+    </div>
+  </section>
+
+  <!-- ───────────── SLIDE 9 — THANK YOU (combined) ───────────── -->
+  <section class="slide slide-thanks">
+    <div class="grid-bg"></div>
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> Berkeleytime · ML & Explore</div>
+      <div>OCTO Showcase 2026</div>
+    </div>
+
+    <div>
+      <div class="enough">Enough slides. Let's <em>show you.</em></div>
+      <h1>Demo.</em></h1>
+      <p class="sub">Six engineers. Four designers. One Explore page.</p>
+    </div>
+
+    <div class="footer">
+      <div>berkeleytime.com</div>
+      <div class="pageno">09</div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let idx = 0;
+  const total = slides.length;
+
+  function go(n) {
+    idx = (n + total) % total;
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowRight','PageDown',' '].includes(e.key)) { e.preventDefault(); go(idx + 1); }
+    else if (['ArrowLeft','PageUp'].includes(e.key)) { e.preventDefault(); go(idx - 1); }
+    else if (e.key === 'Home') { go(0); }
+    else if (e.key === 'End') { go(total - 1); }
+    else if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    const x = e.clientX / window.innerWidth;
+    if (x > 0.3) go(idx + 1);
+    else go(idx - 1);
+  });
+</script>
+</body>
+</html>
