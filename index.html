@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <title>ML & Explore Pod — OCTO Showcase</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -36,17 +36,47 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html, body {
+  html {
     height: 100%;
-    background: var(--bt-bg);
+    background: #000;
+    overflow: hidden;
+  }
+  body {
+    height: 100%;
+    background: #000;
     color: var(--bt-ink);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+  .deck {
+    width: 1280px;
+    height: 720px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    transform-origin: center center;
+    background: var(--bt-bg);
+  }
+
+  .mobile-notice {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #000;
+    color: rgba(255,255,255,0.38);
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    padding: 10px 16px;
+    z-index: 1000;
+    display: none;
+    pointer-events: none;
+  }
 
   .slide {
     position: absolute; inset: 0;
@@ -1129,6 +1159,8 @@
 
 </div>
 
+<div class="mobile-notice" id="mobile-notice">This website is best viewed on a computer</div>
+
 <button class="nav-fab prev" aria-label="Previous slide" title="Previous slide">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
 </button>
@@ -1172,6 +1204,16 @@
     e.stopPropagation();
     go(idx - 1);
   });
+
+  const deck = document.getElementById('deck');
+  const notice = document.getElementById('mobile-notice');
+  function scaleDeck() {
+    const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    deck.style.transform = `scale(${scale})`;
+    notice.style.display = window.innerWidth < 1024 ? 'block' : 'none';
+  }
+  scaleDeck();
+  window.addEventListener('resize', scaleDeck);
 </script>
 </body>
 </html>
