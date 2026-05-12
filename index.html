@@ -36,31 +36,28 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html {
+  html, body {
     height: 100%;
-    background: #000;
-    overflow: hidden;
-  }
-  body {
-    height: 100%;
-    background: #000;
+    background: var(--bt-bg);
     color: var(--bt-ink);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
-  .deck {
+  .deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+  /* On narrow screens (phones), force desktop layout and scale via JS */
+  body.is-mobile {
+    background: #000;
+  }
+  body.is-mobile .deck {
+    position: fixed;
+    top: 0; left: 0;
     width: 1280px;
-    height: 720px;
-    position: relative;
-    overflow: hidden;
-    flex-shrink: 0;
-    transform-origin: center center;
+    height: 800px;
+    transform-origin: top left;
     background: var(--bt-bg);
   }
 
@@ -68,7 +65,7 @@
     position: fixed;
     bottom: 0; left: 0; right: 0;
     background: #000;
-    color: rgba(255,255,255,0.38);
+    color: rgba(255,255,255,0.45);
     text-align: center;
     font-size: 11px;
     letter-spacing: 0.06em;
@@ -1207,10 +1204,22 @@
 
   const deck = document.getElementById('deck');
   const notice = document.getElementById('mobile-notice');
+  const MOBILE_BREAKPOINT = 900;
+  const DESIGN_W = 1280;
+  const DESIGN_H = 800;
   function scaleDeck() {
-    const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
-    deck.style.transform = `scale(${scale})`;
-    notice.style.display = window.innerWidth < 1024 ? 'block' : 'none';
+    const isMobile = window.innerWidth < MOBILE_BREAKPOINT;
+    document.body.classList.toggle('is-mobile', isMobile);
+    if (isMobile) {
+      const scale = Math.min(window.innerWidth / DESIGN_W, window.innerHeight / DESIGN_H);
+      const offsetX = (window.innerWidth  - DESIGN_W * scale) / 2;
+      const offsetY = (window.innerHeight - DESIGN_H * scale) / 2;
+      deck.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+      notice.style.display = 'block';
+    } else {
+      deck.style.transform = '';
+      notice.style.display = 'none';
+    }
   }
   scaleDeck();
   window.addEventListener('resize', scaleDeck);
